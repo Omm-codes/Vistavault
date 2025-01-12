@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "envalid": "^8.0.0",
+    "framer-motion": "^11.11.11",
     "next": "^14.2.9",
     "next-auth": "^4.24.10",
     "plaiceholder": "^3.0.0",

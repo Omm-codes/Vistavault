@@ -3,92 +3,97 @@
 import Image from "next/image";
 
 type Props = {
-    src: string;
-    alt: string;
-    onClose: () => void;
-    isLoggedIn: boolean; // Add this line
+  src: string;
+  alt: string;
+  onClose: () => void;
 };
 
-export default function ImageModal({ src, alt, onClose, isLoggedIn }: Props) {
-    const handleDownload = async (imageSrc: string) => {
-        try {
-            const response = await fetch(imageSrc, { mode: 'cors' });
-            if (!response.ok) throw new Error('Image download failed');
+export default function ImageModal({ src, alt, onClose }: Props) {
+  const handleDownload = async (imageSrc: string) => {
+    try {
+      const response = await fetch(imageSrc, { mode: "cors" });
+      if (!response.ok) throw new Error("Image download failed");
 
-            const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
 
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = `image-${Date.now()}.jpg`; // Fixed: Added backticks
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            URL.revokeObjectURL(blobUrl);
-        } catch (error) {
-            console.error('Download failed:', error);
-        }
-    };
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `image-${Date.now()}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
 
-    return (
-        <div
-            className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-75 z-50"
-            onClick={onClose}
-        >
-            <div className="relative max-w-full max-h-full p-4" onClick={(e) => e.stopPropagation()}>
-                <Image
-                    src={src}
-                    alt={alt}
-                    width={800}
-                    height={800}
-                    className="object-contain"
-                />
-                <div className="absolute top-4 right-4 space-x-2 flex">
-                    <button
-                        className="bg-gradient-to-r from-purple-400 to-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-purple-500 hover:to-blue-600 transition duration-300"
-                        onClick={onClose}
-                    >
-                        Close
-                    </button>
-
-                    {/* Only show Download button if logged in */}
-                   
-                        <button
-                            onClick={() => handleDownload(src)}
-                            className="bg-gradient-to-r from-green-400 to-teal-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-green-500 hover:to-teal-600 transition duration-300"
-                        >
-                            Download
-                        </button>
-                    
-
-                    {/* View button (always visible) */}
-                    <a
-                        href={src}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-yellow-500 hover:to-orange-600 transition duration-300"
-                    >
-                        View
-                    </a>
-
-                    {/* Share button (always visible) */}
-                    <button
-                        className="bg-gradient-to-r from-pink-400 to-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-pink-500 hover:to-red-600 transition duration-300"
-                        onClick={() => {
-                            if (navigator.share) {
-                                navigator.share({
-                                    title: 'Check out this image!',
-                                    url: src
-                                }).catch((error) => console.log('Sharing failed', error));
-                            } else {
-                                alert("Sharing not supported");
-                            }
-                        }}
-                    >
-                        Share
-                    </button>
-                </div>
-            </div>
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+      onClick={onClose}
+    >
+      <div
+        className="relative p-4 bg-white rounded-lg shadow-lg max-w-[90%] max-h-[90%] flex flex-col items-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Image Container */}
+        <div className="flex-1 flex items-center justify-center max-w-full max-h-full">
+          <Image
+            src={src}
+            alt={alt}
+            layout="responsive"
+            width={800}
+            height={600}
+            className="rounded-md border border-gray-300 object-contain max-w-full max-h-[80vh]"
+          />
         </div>
-    );
+
+        {/* Buttons */}
+        <div className="flex justify-center space-x-4 mt-4 w-full">
+          <button
+            className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition"
+            onClick={onClose}
+          >
+            Close
+          </button>
+
+          <button
+            className="bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600 transition"
+            onClick={() => handleDownload(src)}
+          >
+            Download
+          </button>
+
+          <a
+            href={src}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition"
+          >
+            View
+          </a>
+
+          <button
+            className="bg-purple-500 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-600 transition"
+            onClick={() => {
+              if (navigator.share) {
+                navigator
+                  .share({
+                    title: "Check out this image!",
+                    url: src,
+                  })
+                  .catch((error) => console.error("Sharing failed:", error));
+              } else {
+                alert("Sharing not supported on this device.");
+              }
+            }}
+          >
+            Share
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

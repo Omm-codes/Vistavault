@@ -1,5 +1,7 @@
 import Link from "next/link";
-import Gallery from "./components/Gallery";
+import dynamic from 'next/dynamic';
+
+const Gallery = dynamic(() => import('./components/Gallery'));
 
 export default function Home() {
   const categories = [
@@ -17,16 +19,14 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-r from-gray-100 via-gray-300 to-gray-500">
       <h1 className="text-4xl font-bold text-center mb-6">Welcome to Vistavault</h1>
 
-      {/* Category Section */}
       <div className="container mx-auto p-4">
-        <h2 className="text-3xl font-bold mb-4">Categories</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-12">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {categories.map((category) => (
             <Link key={category.slug} href={`/categories/${category.slug}`}>
               <div
-                className="relative group h-64 overflow-hidden rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl"
+                className="relative group h-64 overflow-hidden rounded-lg shadow-lg transition-transform transform hover:scale-105"
                 style={{
-                  backgroundImage: `url(${category.imageUrl})`, // Fixed: Added backticks for template literal
+                  backgroundImage: `url('${category.imageUrl}')`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
@@ -42,8 +42,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Gallery Section */}
       <Gallery />
     </div>
   );
 }
+

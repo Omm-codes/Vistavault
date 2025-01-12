@@ -1,12 +1,13 @@
+// src/app/Explore/page.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import Masonry from "react-masonry-css";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ImageModal from "../components/ImageModal";
-import { getImages } from "../../lib/getImages"; // Ensure path is correct
-import { fetchLoginStatus } from "../../lib/auth"; // Import the new auth utility
-import { useRouter } from "next/navigation";
+import { getImages } from "../../lib/getImages";
+import { fetchLoginStatus } from "../../lib/auth";
 
 export default function Explore() {
     const [images, setImages] = useState<string[]>([]);
@@ -14,7 +15,6 @@ export default function Explore() {
     const [hasMore, setHasMore] = useState(true);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const router = useRouter();
 
     useEffect(() => {
         const checkLogin = async () => {
@@ -35,17 +35,24 @@ export default function Explore() {
         }
     };
 
-    const breakpointColumnsObj = {
-        default: 4,
-        1100: 3,
-        700: 2,
-        500: 1,
+    const headingAnimation = {
+        hidden: { opacity: 0, y: -50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
     };
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">
-            <h1 className="text-3xl font-bold mb-6">Explore Recently Uploaded Photos</h1>
+            {/* Animated heading */}
+            <motion.h1
+                className="text-3xl font-bold mb-6"
+                initial="hidden"
+                animate="visible"
+                variants={headingAnimation}
+            >
+                Explore Recently Uploaded Photos
+            </motion.h1>
 
+            {/* Masonry Grid Animation */}
             <InfiniteScroll
                 dataLength={images.length}
                 next={fetchMoreImages}
@@ -54,22 +61,30 @@ export default function Explore() {
                 endMessage={<p className="text-center mt-4">No more images to display.</p>}
             >
                 <Masonry
-                    breakpointCols={breakpointColumnsObj}
+                    breakpointCols={{
+                        default: 4,
+                        1100: 3,
+                        700: 2,
+                        500: 1,
+                    }}
                     className="flex -ml-4 w-auto"
                     columnClassName="pl-4 bg-clip-padding"
                 >
                     {images.map((image, index) => (
-                        <div
+                        <motion.div
                             key={index}
                             className="relative cursor-pointer transition-transform transform hover:scale-105 mb-4"
                             onClick={() => setSelectedImage(image)}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: index * 0.1 }}
                         >
                             <img
                                 src={image}
-                                alt={`Image ${index + 1}`} // Fixed: Added backticks for template literal
+                                alt={`Image ${index + 1}`}
                                 className="w-full h-auto object-cover rounded-lg shadow-lg"
                             />
-                        </div>
+                        </motion.div>
                     ))}
                 </Masonry>
             </InfiniteScroll>
@@ -79,7 +94,7 @@ export default function Explore() {
                     src={selectedImage}
                     alt="Selected Image"
                     onClose={() => setSelectedImage(null)}
-                    isLoggedIn={isLoggedIn} // Pass login state
+                    isLoggedIn={isLoggedIn}
                 />
             )}
         </div>
