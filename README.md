@@ -1,2 +1,2 @@
 # Vistavault
-Image Gallery
+Basic Image Gallery made with next.js
